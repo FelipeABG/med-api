@@ -4,7 +4,7 @@
     "description": "",
     "main": "src/main.ts",
     "scripts": {
-        "start": "deno --allow-net --allow-read --allow-env src/main.ts"
+        "start": "deno --allow-net --allow-read --allow-env --allow-run --allow-ffi src/main.ts"
     },
     "keywords": [],
     "author": "",
@@ -15,6 +15,7 @@
         "@nestjs/config": "^4.0.2",
         "@nestjs/core": "^11.1.6",
         "@nestjs/platform-express": "^11.1.6",
+        "@prisma/client": "^6.16.2",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.2",
         "reflect-metadata": "^0.2.2",
@@ -22,6 +23,7 @@
     },
     "devDependencies": {
         "@types/node": "^24.5.2",
-        "eslint": "^9.36.0"
+        "eslint": "^9.36.0",
+        "prisma": "^6.16.2"
     }
 }

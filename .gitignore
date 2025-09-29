@@ -24,3 +24,6 @@ lerna-debug.log*
 
 # config files
 .prettierrc
+
+# prisma files
+./src/generated/
