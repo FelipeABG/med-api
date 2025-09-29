@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true
+  }
+}
