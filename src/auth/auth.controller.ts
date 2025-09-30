@@ -1,20 +1,24 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { UserService } from "../user/user.service.ts";
-import { CreateUserDTO } from "../user/dto/create-user.dto.ts";
+import { AuthService } from "./auth.service.ts";
+import { SignUpDTO } from "./dto/sign-up.dto.ts";
+import { Public } from "./auth.decorator.ts";
 
 @Controller("/auth")
 export class AuthController {
-    constructor(private userService: UserService) {}
+    constructor(private readonly authService: AuthService) {}
+
     @Post("/login")
+    @Public()
     login() {
         return;
     }
 
     @Post("/signup")
-    signup(@Body() user: CreateUserDTO) {
-        return this.userService.create({
-            email: user.email,
-            hash: user.password,
-        });
+    @Public()
+    async signup(@Body() signUpDTO: SignUpDTO) {
+        return await this.authService.signUp(
+            signUpDTO.email,
+            signUpDTO.password,
+        );
     }
 }

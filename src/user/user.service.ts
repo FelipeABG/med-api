@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { DBService } from "../db/db.service.ts";
 import { Prisma } from "../generated/prisma/client.ts";
 
@@ -11,12 +15,21 @@ export class UserService {
             return await this.dbService.user.create({ data });
         } catch (err: any) {
             if (err.code == "P2002") {
-                throw new HttpException(
-                    "Duplicate email",
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new BadRequestException(err, "Email already exists");
             }
+            throw err;
+        }
+    }
 
+    async findOne(unique: Prisma.UserWhereUniqueInput) {
+        try {
+            return await this.dbService.user.findUniqueOrThrow({
+                where: unique,
+            });
+        } catch (err: any) {
+            if (err.code == "P2002") {
+                throw new NotFoundException(err, "User not found");
+            }
             throw err;
         }
     }
