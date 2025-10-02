@@ -1,7 +1,15 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service.ts";
-import { SignUpDTO } from "./dto/sign-up.dto.ts";
+import { AuthDTO } from "./dto/auth.dto.ts";
 import { Public } from "./auth.decorator.ts";
+import {
+    ApiBadRequestResponse,
+    ApiCreatedResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 
 @Controller("/auth")
 export class AuthController {
@@ -9,16 +17,40 @@ export class AuthController {
 
     @Post("/login")
     @Public()
-    login() {
-        return;
+    @ApiOperation({
+        summary: "User log in endpoint.",
+        description:
+            "Authenticate user with email and password, returning the JWT token.",
+    })
+    @ApiOkResponse({ description: "Successfully authenticated." })
+    @ApiBadRequestResponse({
+        description: "Either password and/or email is invalid.",
+    })
+    @ApiUnauthorizedResponse({
+        description: "Password is incorrect.",
+    })
+    @ApiNotFoundResponse({
+        description: "User email not found in the database.",
+    })
+    login(@Body() authDto: AuthDTO) {
+        return this.authService.logIn(authDto.email, authDto.password);
     }
 
     @Post("/signup")
+    @HttpCode(HttpStatus.CREATED)
+    @ApiOperation({
+        summary: "User registration enpoint.",
+        description:
+            "Register a new user with email and password, returning the user object. NOTE: Go to AuthDTO schema to see password and email constraints.",
+    })
     @Public()
-    async signup(@Body() signUpDTO: SignUpDTO) {
-        return await this.authService.signUp(
-            signUpDTO.email,
-            signUpDTO.password,
-        );
+    @ApiCreatedResponse({
+        description: "The user has been successfuly created.",
+    })
+    @ApiBadRequestResponse({
+        description: "Either password and/or email is invalid.",
+    })
+    async signup(@Body() authDTO: AuthDTO) {
+        return await this.authService.signUp(authDTO.email, authDTO.password);
     }
 }

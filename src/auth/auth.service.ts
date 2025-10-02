@@ -16,7 +16,7 @@ export class AuthService {
         return await this.userService.create({ email, hash });
     }
 
-    async longIn(email: string, password: string) {
+    async logIn(email: string, password: string) {
         // If the user does not exist, throws not found exception
         const user = await this.userService.findOne({ email });
 

@@ -4,7 +4,7 @@
     "description": "",
     "main": "src/main.ts",
     "scripts": {
-        "start": "deno --allow-net --allow-read --allow-env --allow-run --allow-ffi src/main.ts"
+        "start": "deno --watch --allow-net --allow-read --allow-env --allow-run --allow-ffi src/main.ts"
     },
     "keywords": [],
     "author": "",
@@ -16,6 +16,7 @@
         "@nestjs/core": "^11.1.6",
         "@nestjs/jwt": "^11.0.0",
         "@nestjs/platform-express": "^11.1.6",
+        "@nestjs/swagger": "^11.2.0",
         "@prisma/client": "^6.16.2",
         "bcryptjs": "^3.0.2",
         "class-transformer": "^0.5.1",
