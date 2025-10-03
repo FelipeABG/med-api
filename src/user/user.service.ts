@@ -3,8 +3,8 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import { DBService } from "../db/db.service.ts";
-import { Prisma } from "../generated/prisma/client.ts";
+import { DBService } from "../db/db.service";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class UserService {
@@ -27,7 +27,7 @@ export class UserService {
                 where: unique,
             });
         } catch (err: any) {
-            if (err.code == "P2002") {
+            if (err.code == "P2025") {
                 throw new NotFoundException(err, "User not found");
             }
             throw err;

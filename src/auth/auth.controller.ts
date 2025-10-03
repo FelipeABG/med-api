@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { AuthService } from "./auth.service.ts";
-import { AuthDTO } from "./dto/auth.dto.ts";
-import { Public } from "./auth.decorator.ts";
+import { AuthService } from "./auth.service";
+import { AuthDTO } from "./dto/auth.dto";
+import { Public } from "./auth.decorator";
 import {
     ApiBadRequestResponse,
     ApiCreatedResponse,

@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "allowImportingTsExtensions": true,
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "strictPropertyInitialization": false
-  }
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
 }

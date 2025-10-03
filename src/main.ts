@@ -1,5 +1,5 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module.ts";
+import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
@@ -27,7 +27,7 @@ async function main() {
 
     const documentFactory = SwaggerModule.createDocument(app, swaggerConfig);
     // API documentation available on /docs
-    SwaggerModule.setup("docs", app, documentFactory);
+    SwaggerModule.setup("docs", app, documentFactory, { explorer: true });
     app.listen(process.env.PORT ?? 8080);
 }
 main();

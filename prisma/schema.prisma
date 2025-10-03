@@ -4,10 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider     = "prisma-client"           
-  // The usual way generates commonJS module, which deno does not understand
-  output       = "../src/generated/prisma"
-  moduleFormat = "esm"
+  provider     = "prisma-client-js"
 }
 
 model User {
