@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "../user/user.service";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
@@ -22,6 +22,7 @@ export class AuthService {
 
         const match = await bcrypt.compare(password, user.hash);
         if (!match) {
+            // If the password does not match, throw an Unauthorized expecption
             throw new UnauthorizedException("Incorrect password");
         }
 

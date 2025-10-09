@@ -7,7 +7,7 @@ import { BadRequestException, NotFoundException } from "@nestjs/common";
 describe("UserService Test", () => {
     let userService: UserService;
     let dbService: DBService;
-    let user = { email: "test@gmail.com", hash: "fajlskfd;sjeorhih" };
+    const user = { email: "test@gmail.com", hash: "fajlskfd;sjeorhih" };
 
     beforeAll(async () => {
         const modRef = await Test.createTestingModule({
