@@ -13,8 +13,8 @@ async function main() {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     // Getting the runtime variable for the server port
-    const cfg = app.get(ConfigService);
-    const PORT = cfg.get("PORT");
+    const configService = app.get(ConfigService);
+    const PORT = configService.get("PORT");
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle("Medicine API")

@@ -10,7 +10,7 @@ import {
 import { JwtModule } from "@nestjs/jwt";
 import { AuthGuard } from "./auth.guard";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import config from "../config/config";
+import validate from "../config/config";
 
 describe("AuthService test", () => {
     let authService: AuthService;
@@ -25,7 +25,7 @@ describe("AuthService test", () => {
             ],
             imports: [
                 UserModule,
-                ConfigModule.forRoot({ load: [config] }),
+                ConfigModule.forRoot({ validate }),
                 JwtModule.registerAsync({
                     imports: [ConfigModule],
                     inject: [ConfigService],
