@@ -11,6 +11,8 @@ async function main() {
     // Ensures data received in the handler to be as expected. If not as expected,
     // returns an error before even calling the handler.
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+    // Getting the runtime variable for the server port
     const cfg = app.get(ConfigService);
     const PORT = cfg.get("PORT");
 
