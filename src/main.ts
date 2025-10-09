@@ -2,6 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
 
 async function main() {
     const app = await NestFactory.create(AppModule);
@@ -10,6 +11,8 @@ async function main() {
     // Ensures data received in the handler to be as expected. If not as expected,
     // returns an error before even calling the handler.
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    const cfg = app.get(ConfigService);
+    const PORT = cfg.get("PORT");
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle("Medicine API")
@@ -25,9 +28,10 @@ async function main() {
         )
         .build();
 
-    const documentFactory = SwaggerModule.createDocument(app, swaggerConfig);
     // API documentation available on /docs
+    const documentFactory = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup("docs", app, documentFactory, { explorer: true });
-    app.listen(process.env.PORT ?? 8080);
+
+    app.listen(PORT);
 }
 main();

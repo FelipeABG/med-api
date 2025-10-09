@@ -4,6 +4,7 @@ import { AuthService } from "./auth.service";
 import { UserModule } from "../user/user.module";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthGuard } from "./auth.guard";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
     controllers: [AuthController],
@@ -11,11 +12,16 @@ import { AuthGuard } from "./auth.guard";
     // so it cannot be applied in top level with app.useGlobalGuards()
     providers: [AuthService, { provide: "APP_GUARD", useClass: AuthGuard }],
     imports: [
+        ConfigModule,
         UserModule,
-        JwtModule.register({
-            global: true,
-            secret: process.env.SECRET_KEY,
-            signOptions: { expiresIn: "1 day" },
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService) => ({
+                global: true,
+                secret: configService.get("SECRET_KEY"),
+                signOptions: { expiresIn: "1 day" },
+            }),
         }),
     ],
 })

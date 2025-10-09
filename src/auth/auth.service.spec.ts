@@ -9,6 +9,8 @@ import {
 } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthGuard } from "./auth.guard";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import config from "../config/config";
 
 describe("AuthService test", () => {
     let authService: AuthService;
@@ -23,10 +25,15 @@ describe("AuthService test", () => {
             ],
             imports: [
                 UserModule,
-                JwtModule.register({
-                    global: true,
-                    secret: process.env.SECRET_KEY,
-                    signOptions: { expiresIn: "1 day" },
+                ConfigModule.forRoot({ load: [config] }),
+                JwtModule.registerAsync({
+                    imports: [ConfigModule],
+                    inject: [ConfigService],
+                    useFactory: async (configService: ConfigService) => ({
+                        global: true,
+                        secret: configService.get("SECRET_KEY"),
+                        signOptions: { expiresIn: "1 day" },
+                    }),
                 }),
             ],
         }).compile();
