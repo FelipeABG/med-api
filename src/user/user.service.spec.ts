@@ -61,4 +61,27 @@ describe("UserService Test", () => {
             ).rejects.toThrow(NotFoundException);
         });
     });
+
+    describe("findAll", () => {
+        it("Should return all the users from the db", async () => {
+            await userService.create(user);
+            await userService.create({ email: "fkljads", hash: "akdljfsd" });
+            const result = await userService.findAll();
+            expect(result.length).toBeGreaterThanOrEqual(2);
+        });
+    });
+
+    describe("deleteOne", () => {
+        it("Should delete a user uniquely identified", async () => {
+            await userService.create(user);
+            const response = await userService.deleteOne({ email: user.email });
+            expect(response.email).toBe(user.email);
+        });
+
+        it("Should fail if the user does not exist", async () => {
+            await expect(
+                userService.deleteOne({ email: user.email }),
+            ).rejects.toThrow(NotFoundException);
+        });
+    });
 });

@@ -33,4 +33,19 @@ export class UserService {
             throw err;
         }
     }
+
+    async findAll() {
+        return this.dbService.user.findMany();
+    }
+
+    async deleteOne(unique: Prisma.UserWhereUniqueInput) {
+        try {
+            return await this.dbService.user.delete({ where: unique });
+        } catch (err) {
+            if (err.code == "P2025") {
+                throw new NotFoundException(err, "User not found");
+            }
+            throw err;
+        }
+    }
 }

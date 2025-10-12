@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import * as request from "supertest";
 import { DBService } from "../db/db.service";
-import { AuthModule } from "./auth.module";
+import { AppModule } from "../app.module";
 
 describe("Auth endpoint", () => {
     let app: INestApplication;
@@ -11,7 +11,7 @@ describe("Auth endpoint", () => {
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [AuthModule],
+            imports: [AppModule],
         }).compile();
 
         dbService = moduleRef.get(DBService);
