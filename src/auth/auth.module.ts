@@ -3,14 +3,11 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { UserModule } from "../user/user.module";
 import { JwtModule } from "@nestjs/jwt";
-import { AuthGuard } from "./auth.guard";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
     controllers: [AuthController],
-    //AuthGuard is global (the "APP_GUARD" token ensures it) but uses dependency injection,
-    // so it cannot be applied in top level with app.useGlobalGuards()
-    providers: [AuthService, { provide: "APP_GUARD", useClass: AuthGuard }],
+    providers: [AuthService],
     imports: [
         ConfigModule,
         UserModule,

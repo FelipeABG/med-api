@@ -27,4 +27,4 @@ lerna-debug.log*
 
 # prisma files
 /src/generated/
-/prisma/migrate
+/prisma/migrations
