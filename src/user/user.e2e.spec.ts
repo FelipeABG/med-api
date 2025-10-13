@@ -81,7 +81,7 @@ describe("Users endpoint", () => {
             return request(app.getHttpServer()).get("/users").expect(401);
         });
 
-        it("/GET should fail if the authenticated user does not have the correct role, returning 4xx http code", async () => {
+        it("/GET should fail if the authenticated user does not have the correct role, returning 403 http code", async () => {
             await request(app.getHttpServer())
                 .post("/auth/signup")
                 .send(user)
@@ -90,12 +90,15 @@ describe("Users endpoint", () => {
             const token = await request(app.getHttpServer())
                 .post("/auth/login")
                 .send(user)
-                .expect(200);
+                .expect(200)
+                .then((response) => {
+                    return response.body.token;
+                });
 
             return request(app.getHttpServer())
                 .get("/users")
                 .set("Authorization", `Bearer ${token}`)
-                .expect(401);
+                .expect(403);
         });
     });
 });
