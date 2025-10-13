@@ -34,8 +34,8 @@ export class UserService {
         }
     }
 
-    async findAll() {
-        return this.dbService.user.findMany();
+    async findAll(limit: number, offset: number) {
+        return this.dbService.user.findMany({ take: limit, skip: offset });
     }
 
     async deleteOne(unique: Prisma.UserWhereUniqueInput) {
