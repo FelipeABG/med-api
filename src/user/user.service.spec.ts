@@ -66,7 +66,7 @@ describe("UserService Test", () => {
         it("Should return all the users from the db", async () => {
             await userService.create(user);
             await userService.create({ email: "fkljads", hash: "akdljfsd" });
-            const result = await userService.findAll();
+            const result = await userService.findAll(100, 0);
             expect(result.length).toBeGreaterThanOrEqual(2);
         });
     });
