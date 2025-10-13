@@ -43,7 +43,7 @@ export class AuthController {
     @ApiOperation({
         summary: "User registration enpoint.",
         description:
-            "Register a new user with email and password, returning the user object. NOTE: Go to AuthDTO schema to see password and email constraints.",
+            "Register a new user with email and password, returning the user object. **NOTE**: Go to AuthDTO schema to see password and email constraints.",
     })
     @ApiCreatedResponse({
         description: "The user has been successfuly created.",
