@@ -28,6 +28,10 @@ async function main() {
             "Auth",
             "Endpoints used for user registration and authentication.",
         )
+        .addTag(
+            "User",
+            "Edpoints related with user entity operations. (All user endpoints are accessible only to **administrators**).",
+        )
         .build();
 
     // API documentation available on /docs
