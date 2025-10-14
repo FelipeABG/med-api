@@ -32,7 +32,7 @@ export class UserController {
     @ApiOperation({
         summary: "Retrieve all users.",
         description:
-            "Returns a list with all the users registered in the system. **Acessible only to administrators**. If there is no users, returns am empty list.",
+            "Returns a list with all the users registered in the system. **Acessible only to administrators**. If there is no users, returns an empty list.",
     })
     @ApiOkResponse({ description: "Sucessfuly returned the list of users." })
     @ApiUnauthorizedResponse({
