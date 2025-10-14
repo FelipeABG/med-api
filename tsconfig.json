@@ -13,5 +13,5 @@
     "incremental": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "test/user.e2e-spec.ts", "test/auth.e2e-spec.ts"]
 }
