@@ -19,7 +19,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Public()
     @ApiOperation({
-        summary: "User log in endpoint.",
+        summary: "Log a user in the system.",
         description:
             "Authenticate user with email and password, returning the JWT token.",
     })
@@ -41,7 +41,7 @@ export class AuthController {
     @HttpCode(HttpStatus.CREATED)
     @Public()
     @ApiOperation({
-        summary: "User registration enpoint.",
+        summary: "Register a new user in the system.",
         description:
             "Register a new user with email and password, returning the user object. **NOTE**: Go to AuthDTO schema to see password and email constraints.",
     })

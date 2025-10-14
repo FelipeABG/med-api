@@ -2,7 +2,7 @@ import { ApiProperty, ApiSchema } from "@nestjs/swagger";
 import { IsOptional, IsPositive, Min } from "class-validator";
 
 @ApiSchema({
-    name: "Pagination DTO",
+    name: "Pagination",
     description: "DTO used to describe pagination query parameters.",
 })
 export class UserPaginationDTO {
