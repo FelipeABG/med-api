@@ -7,16 +7,21 @@ import * as bcrypt from "bcryptjs";
 import * as request from "supertest";
 import { Role } from "@prisma/client";
 
+interface Actor {
+    email: string;
+    password: string;
+}
+
 describe("Users endpoint", () => {
     let app: INestApplication;
     let dbService: DBService;
     let userService: UserService;
 
-    const user = { email: "test@gmail.com", password: "Test_password1!" };
-    const adminUser = {
-        email: "test_admin@gmail.com",
-        password: "Test_password2!",
-    };
+    let adminToken: string;
+    let admin: Actor;
+
+    let userToken: string;
+    let user: Actor;
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
@@ -29,165 +34,117 @@ describe("Users endpoint", () => {
 
         app.useGlobalPipes(new ValidationPipe({ transform: true }));
         await app.init();
+
+        //Creates both an admin and a normal user for tests
+        admin = {
+            email: "adminuseremail@gmail.com",
+            password: "Thisisthe@admin1004!",
+        };
+        user = {
+            email: "useruseremail@gmail.com",
+            password: "Thisisthe@user1009!",
+        };
+
+        const hashAdmin = await bcrypt.hash(admin.password, 10);
+        await userService.create({
+            email: admin.email,
+            hash: hashAdmin,
+            roles: [Role.Admin],
+        });
+        const userHash = await bcrypt.hash(user.password, 10);
+        await userService.create({
+            email: user.email,
+            hash: userHash,
+        });
+
+        adminToken = await request(app.getHttpServer())
+            .post("/auth/login")
+            .send(admin)
+            .expect(200)
+            .then((response) => response.body.token);
+
+        userToken = await request(app.getHttpServer())
+            .post("/auth/login")
+            .send(user)
+            .expect(200)
+            .then((response) => response.body.token);
     });
 
     beforeEach(async () => {
-        // Starts a transaction before each test.
         await dbService.$executeRaw`BEGIN`;
     });
 
     afterEach(async () => {
-        // Rollback the transaction after each test.
         await dbService.$executeRaw`ROLLBACK`;
     });
 
     afterAll(async () => {
+        await userService.deleteOne({ email: admin.email });
+        await userService.deleteOne({ email: user.email });
         await app.close();
         await dbService.$disconnect();
     });
 
-    describe("/user endpoint", () => {
-        describe("GET", () => {
-            it("Should return a list of all users registered with 200 http code", async () => {
-                // create a admin user
-                const hash = await bcrypt.hash(adminUser.password, 10);
-                await userService.create({
-                    email: adminUser.email,
-                    hash,
-                    roles: [Role.Admin],
+    describe("GET /users", () => {
+        it("should return a list of all users with 200 status code", async () => {
+            return request(app.getHttpServer())
+                .get("/users")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((response) => {
+                    expect(Array.isArray(response.body)).toBe(true);
                 });
-
-                // get login token
-                const token = await request(app.getHttpServer())
-                    .post("/auth/login")
-                    .send(adminUser)
-                    .expect(200)
-                    .then((response) => {
-                        return response.body.token;
-                    });
-
-                expect(token).toBeDefined();
-
-                //get user list
-                return request(app.getHttpServer())
-                    .get("/users")
-                    .set("Authorization", `Bearer ${token}`)
-                    .expect(200)
-                    .then((response) => {
-                        expect(Array.isArray(response.body)).toBe(true);
-                    });
-            });
-
-            it("Should fail if the user is not authenticated, returning 401 http code", async () => {
-                return request(app.getHttpServer()).get("/users").expect(401);
-            });
-
-            it("Should fail if the authenticated user does not have the correct role, returning 403 http code", async () => {
-                await request(app.getHttpServer())
-                    .post("/auth/signup")
-                    .send(user)
-                    .expect(201);
-
-                const token = await request(app.getHttpServer())
-                    .post("/auth/login")
-                    .send(user)
-                    .expect(200)
-                    .then((response) => {
-                        return response.body.token;
-                    });
-
-                return request(app.getHttpServer())
-                    .get("/users")
-                    .set("Authorization", `Bearer ${token}`)
-                    .expect(403);
-            });
         });
 
-        describe("DELETE", () => {
-            it(":id should delete an user by its id, returning 204 http code", async () => {
-                // create a admin user
-                const hash = await bcrypt.hash(adminUser.password, 10);
-                await userService.create({
-                    email: adminUser.email,
-                    hash,
-                    roles: [Role.Admin],
-                });
+        it("should return 401 when user is not authenticated", async () => {
+            return request(app.getHttpServer()).get("/users").expect(401);
+        });
 
-                // get admin login token
-                const token = await request(app.getHttpServer())
-                    .post("/auth/login")
-                    .send(adminUser)
-                    .expect(200)
-                    .then((response) => {
-                        return response.body.token;
-                    });
+        it("should return 403 when user lacks admin role", async () => {
+            return request(app.getHttpServer())
+                .get("/users")
+                .set("Authorization", `Bearer ${userToken}`)
+                .expect(403);
+        });
+    });
 
-                expect(token).toBeDefined();
+    describe("DELETE /users/:id", () => {
+        it("should delete user by id and return 204 status code", async () => {
+            const randomUser = {
+                email: `user-${Date.now()}@gmail.com`,
+                password: "Test_password1!",
+            };
 
-                //create a user do be deleted
-                const userId = await request(app.getHttpServer())
-                    .post("/auth/signup")
-                    .send(user)
-                    .expect(201)
-                    .then((response) => response.body.id);
+            const userId = await request(app.getHttpServer())
+                .post("/auth/signup")
+                .send(randomUser)
+                .expect(201)
+                .then((response) => response.body.id);
 
-                return request(app.getHttpServer())
-                    .delete(`/users/${userId}`)
-                    .set("Authorization", `Bearer ${token}`)
-                    .expect(204);
-            });
+            return request(app.getHttpServer())
+                .delete(`/users/${userId}`)
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(204);
+        });
 
-            it(":id should fail if the user does not exist in the db, returning 404 http code", async () => {
-                // create a admin user
-                const hash = await bcrypt.hash(adminUser.password, 10);
-                await userService.create({
-                    email: adminUser.email,
-                    hash,
-                    roles: [Role.Admin],
-                });
+        it("should return 404 when user does not exist", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/9999999")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404);
+        });
 
-                // get admin login token
-                const token = await request(app.getHttpServer())
-                    .post("/auth/login")
-                    .send(adminUser)
-                    .expect(200)
-                    .then((response) => {
-                        return response.body.token;
-                    });
+        it("should return 401 when user is not authenticated", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/9999999")
+                .expect(401);
+        });
 
-                expect(token).toBeDefined();
-
-                return request(app.getHttpServer())
-                    .delete("/users/3040565")
-                    .set("Authorization", `Bearer ${token}`)
-                    .expect(404);
-            });
-
-            it(":id should fail if the user is not authenticaded, returning 401 http code", async () => {
-                return request(app.getHttpServer())
-                    .delete("/users/3040565")
-                    .expect(401);
-            });
-
-            it(":id should fail if the user does not have the correct role, returning 403 http code", async () => {
-                await request(app.getHttpServer())
-                    .post("/auth/signup")
-                    .send(user)
-                    .expect(201);
-
-                const token = await request(app.getHttpServer())
-                    .post("/auth/login")
-                    .send(user)
-                    .expect(200)
-                    .then((response) => {
-                        return response.body.token;
-                    });
-
-                return request(app.getHttpServer())
-                    .delete("/users/1")
-                    .set("Authorization", `Bearer ${token}`)
-                    .expect(403);
-            });
+        it("should return 403 when user lacks admin role", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/1")
+                .set("Authorization", `Bearer ${userToken}`)
+                .expect(403);
         });
     });
 });
