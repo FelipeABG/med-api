@@ -3,7 +3,7 @@ import { IsOptional, IsPositive, Min } from "class-validator";
 
 @ApiSchema({
     name: "Pagination",
-    description: "DTO used to describe pagination query parameters.",
+    description: "DTO used to describe pagination query string.",
 })
 export class UserPaginationDTO {
     @IsOptional()
