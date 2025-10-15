@@ -108,8 +108,8 @@ describe("Users endpoint", () => {
         });
     });
 
-    describe("DELETE /users/:id", () => {
-        it("should delete user by id and return 204 status code", async () => {
+    describe("DELETE /users/...", () => {
+        it(":id should delete user by id and return 204 status code", async () => {
             const randomUser = {
                 email: `user-${Date.now()}@gmail.com`,
                 password: "Test_password1!",
@@ -127,24 +127,76 @@ describe("Users endpoint", () => {
                 .expect(204);
         });
 
-        it("should return 404 when user does not exist", async () => {
+        it(":id should return 404 when user does not exist", async () => {
             return request(app.getHttpServer())
                 .delete("/users/9999999")
                 .set("Authorization", `Bearer ${adminToken}`)
                 .expect(404);
         });
 
-        it("should return 401 when user is not authenticated", async () => {
+        it(":id should return 401 when user is not authenticated", async () => {
             return request(app.getHttpServer())
                 .delete("/users/9999999")
                 .expect(401);
         });
 
-        it("should return 403 when user lacks admin role", async () => {
+        it(":id should return 403 when user lacks admin role", async () => {
             return request(app.getHttpServer())
                 .delete("/users/1")
                 .set("Authorization", `Bearer ${userToken}`)
                 .expect(403);
+        });
+
+        it(":id should return 400 when parameter is not a number", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/foo")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(400);
+        });
+
+        it("/by-email/:email should delete user by email and return 204 status code", async () => {
+            const randomUser = {
+                email: `user-${Date.now()}@gmail.com`,
+                password: "Test_password1!",
+            };
+
+            const userEmail = await request(app.getHttpServer())
+                .post("/auth/signup")
+                .send(randomUser)
+                .expect(201)
+                .then((response) => response.body.email);
+
+            return await request(app.getHttpServer())
+                .delete(`/users/by-email/${userEmail}`)
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(204);
+        });
+
+        it("/by-email/:email should return 404 when user does not exist", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/by-email/somethrc@gorrm.com")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404);
+        });
+
+        it("/by-email/:email should return 401 when user is not authenticated", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/by-email/somethrc@gorrm.com")
+                .expect(401);
+        });
+
+        it("/by-email/:email should return 403 when user lacks admin role", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/by-email/somethrc@gorrm.com")
+                .set("Authorization", `Bearer ${userToken}`)
+                .expect(403);
+        });
+
+        it("/by-email/:email should return 400 if the given parameter is not an email", async () => {
+            return request(app.getHttpServer())
+                .delete("/users/by-email/543")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(400);
         });
     });
 });

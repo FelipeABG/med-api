@@ -72,10 +72,20 @@ describe("UserService Test", () => {
     });
 
     describe("deleteOne", () => {
-        it("Should delete a user uniquely identified", async () => {
-            await userService.create(user);
-            const response = await userService.deleteOne({ email: user.email });
-            expect(response.email).toBe(user.email);
+        it("Should delete a user uniquely identified by its id", async () => {
+            const createdUser = await userService.create(user);
+            const response = await userService.deleteOne({
+                id: createdUser.id,
+            });
+            expect(response.id).toBe(createdUser.id);
+        });
+
+        it("Should delete a user uniquely identified by its email", async () => {
+            const createdUser = await userService.create(user);
+            const response = await userService.deleteOne({
+                email: createdUser.email,
+            });
+            expect(response.email).toBe(createdUser.email);
         });
 
         it("Should fail if the user does not exist", async () => {
