@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpStatus,
     Param,
+    ParseIntPipe,
     Query,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
@@ -21,6 +22,7 @@ import {
     ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { UserPaginationDTO } from "./dto/user-pagination.dto";
+import { ParseEmailPipe } from "./user.pipe";
 
 @Controller("/users")
 export class UserController {
@@ -71,7 +73,30 @@ export class UserController {
         name: "id",
         description: "Unique identifier of the user to delete.",
     })
-    async deleteOneById(@Param("id") id: number) {
+    async deleteOneById(@Param("id", ParseIntPipe) id: number) {
         await this.userService.deleteOne({ id });
+    }
+
+    @Delete("/by-email/:email")
+    @Roles(Role.Admin)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
+    @ApiOperation({
+        summary: "Delete an user by email.",
+        description:
+            "Deletes a user identified by its email. **Accessible only to administrators**. If there is no such user, returns 404 http code.",
+    })
+    @ApiUnauthorizedResponse({
+        description: "Only authenticated users can access this endpoint.",
+    })
+    @ApiNoContentResponse({
+        description: "The user has been successfuly deleted.",
+    })
+    @ApiForbiddenResponse({
+        description: "Only **administrators** can access this endpoint.",
+    })
+    @ApiNotFoundResponse({ description: "The user does not exist in the db." })
+    async deleteOneByEmail(@Param("email", ParseEmailPipe) email: string) {
+        await this.userService.deleteOne({ email });
     }
 }
