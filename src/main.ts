@@ -36,7 +36,7 @@ async function main() {
 
     // API documentation available on /docs
     const documentFactory = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup("docs", app, documentFactory, { explorer: true });
+    SwaggerModule.setup("docs", app, documentFactory);
 
     app.listen(PORT);
 }
