@@ -2,7 +2,7 @@ import { ApiProperty, ApiSchema } from "@nestjs/swagger";
 import { IsEmail, IsStrongPassword } from "class-validator";
 
 @ApiSchema({
-    name: "Sign Up",
+    name: "Auth",
     description:
         "DTO used to describe authentication expected request body content",
 })
